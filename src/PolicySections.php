@@ -25,4 +25,12 @@ class PolicySections
     {
         return self::LABELS[$section] ?? $section;
     }
+
+    /**
+     * The rules as JSON, for a site whose filter is drawn in the browser.
+     */
+    public static function rulesJSON(): string
+    {
+        return json_encode(['hidden' => self::HIDDEN, 'labels' => self::LABELS], JSON_UNESCAPED_UNICODE);
+    }
 }

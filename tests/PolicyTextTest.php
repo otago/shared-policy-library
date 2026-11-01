@@ -89,5 +89,9 @@ class PolicyTextTest extends SapphireTest
         $this->assertFalse(PolicySections::isHidden('Academic'));
         $this->assertSame('Te Pūkenga/NZIST', PolicySections::label('Te Pūkenga Council'));
         $this->assertSame('Academic', PolicySections::label('Academic'));
+        $this->assertSame(
+            ['hidden' => ['EAG'], 'labels' => ['Te Pūkenga Council' => 'Te Pūkenga/NZIST']],
+            json_decode(PolicySections::rulesJSON(), true)
+        );
     }
 }

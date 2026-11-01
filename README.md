@@ -23,7 +23,8 @@ changed.
 passes `www.op.ac.nz`, the intranet `online.op.ac.nz`.
 
 **`PolicySections`** holds the Section filter's rules: which sections aren't offered,
-and which show under another name.
+and which show under another name. `rulesJSON()` gives them to a filter drawn in the
+browser.
 
 ## What isn't here
 
