@@ -1,0 +1,433 @@
+// A policy's page, shared by the marketing website and the intranet: the layout,
+// the facts beside the policy, numbered clauses and lists. Include it inside .policy
+// with the site's colours:
+//
+//   .policy { @include policy-page($blue, $text, $muted); }
+//
+// Each site adds its own page padding, links and print button around this. Only
+// the template's own classes are styled, so nothing here reaches beyond a policy.
+@mixin policy-page($blue, $text, $muted) {
+    &__breadcrumbs {
+        margin-bottom: 1rem;
+    }
+
+    &__crumbs {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 0.9375rem;
+        color: $muted;
+
+        a {
+            color: inherit;
+            text-decoration: underline;
+        }
+    }
+
+    &__crumb {
+        // The separator is drawn rather than typed, so it is not read out as
+        // part of the page name.
+        + .policy__crumb::before {
+            content: '/';
+            margin-right: 0.5rem;
+            color: $muted;
+        }
+
+        &[aria-current='page'] {
+            color: $muted;
+        }
+    }
+
+    // The board's page: a 280px sidebar, a 70px gap, an 800px column, the
+    // sidebar's left edge on x 390 of a 1920 screen. Beside each other on a wide
+    // screen; stacked in reading order on a narrow one, where a column of facts
+    // alongside body text would leave neither readable.
+    &__page {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: 'head' 'meta' 'content' 'back';
+        gap: 2rem;
+
+        @media (min-width: 1024px) {
+            grid-template-columns: 17.5rem minmax(0, 50rem);
+            grid-template-areas:
+                '. head'
+                'meta content'
+                'back content';
+            grid-template-rows: auto auto 1fr;
+            column-gap: 4.375rem;
+            row-gap: 0;
+        }
+    }
+
+    &__head {
+        grid-area: head;
+        margin-bottom: 1.25rem;
+
+        @media (min-width: 1024px) {
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.875rem;
+        line-height: 1.2;
+
+        @media (min-width: 1024px) {
+            font-size: 3rem;
+        }
+    }
+
+    &__meta {
+        grid-area: meta;
+        font-size: 1rem;
+        line-height: 1.5;
+
+        // Not sticky: the facts on a long policy run taller than the window,
+        // and a sticky column held its foot out of reach until the policy
+        // ended. The board draws it as an ordinary column.
+        @media (min-width: 1024px) {
+            // The board opens the sidebar just below the top of the policy's
+            // first heading, not level with the heading's line box.
+            margin-top: 1.25rem;
+        }
+    }
+
+    &__content {
+        grid-area: content;
+        min-width: 0;
+        // Below the facts on a phone, the board leaves more room before the
+        // policy starts than between the other parts.
+        margin-top: 1.125rem;
+
+        @media (min-width: 1024px) {
+            margin-top: 0;
+        }
+    }
+
+    // The board indents the facts a little inside their rules. Every rule is
+    // the opening one's fine blue, and the last block is closed by one too,
+    // beside the policy as well as above it.
+    &__meta-block {
+        margin: 0 0 0.875rem;
+        padding: 0 0.5625rem 1.25rem;
+        border-bottom: 1px solid $blue;
+
+        @media (min-width: 1024px) {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &--first {
+            padding-top: 0.875rem;
+            padding-bottom: 0.6875rem;
+            border-top: 1px solid $blue;
+
+            @media (min-width: 1024px) {
+                padding-top: 1.5rem;
+                padding-bottom: 1.5rem;
+            }
+        }
+    }
+
+    &__meta-facts {
+        margin: 0;
+    }
+
+    // Label and value on one line — the approval facts are short, and pairing
+    // them reads as a record rather than a list of headings.
+    &__meta-row {
+        display: grid;
+        grid-template-columns: 7.5rem minmax(0, 1fr);
+        gap: 0.25rem 0;
+        margin-bottom: 0.75rem;
+        line-height: 1.5;
+
+        @media (min-width: 1024px) {
+            margin-bottom: 1.375rem;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        // Sits hard against the row below it, pairing the two dates.
+        &--tight {
+            margin-bottom: 0;
+        }
+
+        dt {
+            margin: 0;
+            font-weight: 700;
+            color: $blue;
+        }
+
+        dd {
+            margin: 0;
+            color: $text;
+        }
+    }
+
+    // Label above value, for the longer ones (a policy owner's title runs to
+    // two lines on its own).
+    &__meta-stack {
+        margin-bottom: 0.6875rem;
+        line-height: 1.5;
+
+        @media (min-width: 1024px) {
+            margin-bottom: 1.3125rem;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        dt {
+            margin: 0 0 0.125rem;
+            font-weight: 700;
+            color: $blue;
+        }
+
+        dd {
+            margin: 0;
+            color: $text;
+        }
+    }
+
+    &__meta-heading {
+        margin: 0 0 0.25rem;
+        font-size: 1rem;
+        // The site's h2 leading would open a gap above it as tall as a line.
+        line-height: 1.5;
+        font-weight: 700;
+        color: $blue;
+    }
+
+    &__read-with-body {
+        color: $text;
+
+        p {
+            // The sidebar's size, not the site's paragraph size.
+            font-size: inherit;
+            // Stated on the paragraph, not just the wrapper: a global `p` rule
+            // sets its own leading and would otherwise differ from the fact
+            // blocks above it.
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+
+            // The heading already sets the gap above; a paragraph's own top
+            // margin on top of it reads as a missing line.
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        // No underline of its own: the site's content links already carry a
+        // rule beneath, as the links in the policy do, and the two together
+        // drew every link here twice.
+    }
+
+    // Sits inside the approval block, so it carries no rule of its own.
+    &__meta-actions {
+        margin: 0.625rem 0 0;
+        line-height: 1.5;
+    }
+
+    // A bare button; the span inside carries the site's content-link styling,
+    // so the underline and hover fill are the site's, not a copy of them.
+    &__print {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: $blue;
+        cursor: pointer;
+
+        // Its display would otherwise show it before a script has bound it.
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    // The page's blue applies to labels and headings; the policy text itself
+    // is black, as the board draws it. Without this the whole document came out
+    // blue because .policy sets the colour for everything under it.
+    //
+    // Headings, paragraphs and lists are spaced as in a general text block.
+    &__body {
+        margin-bottom: 2.5rem;
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: $blue;
+        }
+
+        // The page title is directly above, so the first heading needs no
+        // space of its own.
+        > :first-child,
+        > :first-child > :first-child {
+            margin-top: 0;
+        }
+
+        // Word's wider tables scroll inside themselves on a phone, rather than
+        // pushing the page sideways.
+        @media (max-width: 1023px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    }
+
+    // The intranet gives each section a heading. They are the structure of the
+    // policy, so they get the same weight as any other heading on the site
+    // rather than being run together as one wall of text.
+    &__section {
+        margin-bottom: 2rem;
+
+        // Lists take the site's dash and spacing from list-styles above. Word
+        // wraps each item in a paragraph, whose margin would double the gap
+        // between items.
+        li > p {
+            margin: 0;
+        }
+
+        // Word also gives each item a list of its own, and Word Online wraps
+        // each of those in a ListContainerWrapper, so lists that run on from
+        // one another are spaced as one list, not as several.
+        ul:has(+ ul),
+        .ListContainerWrapper:has(+ .ListContainerWrapper) > ul {
+            margin-bottom: 0;
+        }
+
+        // Off-site links carry the site's own external-link arrow, from the
+        // link--external class PolicyPage::BodyHTML() gives them.
+    }
+
+    // Numbered clauses typed as paragraphs (see PolicyPage::BodyHTML): the
+    // number hangs to the left of the text, and each level sits further in,
+    // as the board sets them.
+    &__clause {
+        position: relative;
+        margin: 0 0 0.5rem;
+        padding-left: 2.375rem;
+
+        &--2 {
+            padding-left: 5.125rem;
+        }
+
+        &--3 {
+            padding-left: 8rem;
+        }
+    }
+
+    &__clause-number {
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+
+        .policy__clause--1 & {
+            font-weight: 700;
+        }
+
+        .policy__clause--2 & {
+            left: 2.375rem;
+        }
+
+        .policy__clause--3 & {
+            left: 4.8125rem;
+        }
+    }
+
+    // Ordered lists (design notes): indented, numbers at every level,
+    // and the third level numeric rather than lettered. `counters()` joins the
+    // whole chain, so 1 → 1.1 → 1.1.1 falls out of the nesting itself.
+    &__body {
+        ol {
+            margin: 0 0 1rem;
+            padding-left: 0;
+            list-style: none;
+            counter-reset: policy-ol;
+
+            // The number sits in a gutter carved out of the item's own padding
+            // rather than hanging outside it, so a long marker cannot collide
+            // with the text. `nowrap` matters: "1.2.1." is wide enough to wrap
+            // inside a fixed-width marker, which breaks the number in half.
+            > li {
+                position: relative;
+                margin-bottom: 0.5rem;
+                padding-left: 2.5rem;
+                counter-increment: policy-ol;
+
+                &::before {
+                    content: counters(policy-ol, '.') '.';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    white-space: nowrap;
+                    font-variant-numeric: tabular-nums;
+                }
+            }
+
+            // Each level down adds a digit group, so the gutter grows with it.
+            ol {
+                margin-top: 0.5rem;
+                margin-bottom: 0;
+
+                > li {
+                    padding-left: 3rem;
+                }
+
+                ol > li {
+                    padding-left: 3.75rem;
+                }
+            }
+        }
+    }
+
+    // Closes the sidebar column, level with the foot of the policy.
+    &__back {
+        grid-area: back;
+        margin: 0;
+
+        @media (min-width: 1024px) {
+            align-self: end;
+            justify-self: end;
+        }
+    }
+
+    // A policy is a document people print. The chrome around it is not, and the
+    // facts belong above the policy rather than in a narrow column beside it.
+    @media print {
+        &__meta-actions,
+        &__back,
+        &__breadcrumbs {
+            display: none;
+        }
+
+        &__page {
+            display: block;
+        }
+    }
+}

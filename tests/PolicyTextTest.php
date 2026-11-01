@@ -83,6 +83,19 @@ class PolicyTextTest extends SapphireTest
         $this->assertSame('', PolicyText::versionFrom('Reviewed in 2020'));
     }
 
+    public function testSectionsInOrderUnderPlainHeadings(): void
+    {
+        $this->assertSame(
+            '<section class="policy__section"><h2>First &amp; foremost</h2><p>One</p></section>'
+            . '<section class="policy__section"><p>Two</p></section>',
+            PolicyText::sections([
+                ['title' => '', 'content' => '<p>Two</p>', 'sort' => 2],
+                ['title' => '', 'content' => '  ', 'sort' => 3],
+                ['title' => 'First & foremost', 'content' => '<p>One</p>', 'sort' => 1],
+            ])
+        );
+    }
+
     public function testSectionRules(): void
     {
         $this->assertTrue(PolicySections::isHidden('EAG'));

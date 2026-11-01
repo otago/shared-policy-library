@@ -10,6 +10,7 @@ changed.
 
 | Method | Does |
 |---|---|
+| `sections($sections)` | A policy's sections as one document |
 | `body($html, $ownHosts)` | All of the below, for a policy's body |
 | `aside($html, $ownHosts)` | The same without clause numbers, for "Read in conjunction with" |
 | `withBreakableSpaces($html)` | Word's non-breaking spaces made ordinary |
@@ -26,11 +27,42 @@ passes `www.op.ac.nz`, the intranet `online.op.ac.nz`.
 and which show under another name. `rulesJSON()` gives them to a filter drawn in the
 browser.
 
+**The policy page.** `templates/Otago/SharedPolicyLibrary/Includes/PolicyPage.ss` is the whole
+page, and `client/scss/_policy-page.scss` lays it out. A site's layout template includes the first:
+
+```
+<% include Otago\SharedPolicyLibrary\Includes\PolicyPage %>
+```
+
+and its stylesheet includes the second with the site's colours, adding its own page padding, links
+and print button:
+
+```scss
+@import 'policy-page';
+
+.policy {
+    @include policy-page($blue, $text, $muted);
+}
+```
+
+The page reads these from the site's policy page:
+
+| Field | Is |
+|---|---|
+| `Library` | The library page, for the trail and "Back to library" |
+| `Title`, `ApprovedBy`, `Responsibility` | Text |
+| `ApprovalDate`, `NextReview` | Dates |
+| `PolicyVersion`, `PolicySection`, `PastoralCareOutcome` | Text, shown when there is any |
+| `HasBody`, `BodyHTML` | Whether it has sections, and the policy text |
+| `HasReadWith`, `ReadWithHTML` | Whether it has "Read in conjunction with", and that text |
+
+A script reveals the print button and binds it: `[data-policy-print]`.
+
 ## What isn't here
 
-- **Styles and templates.** Each site draws these classes itself: the marketing
-  website's stylesheet is built on its Tailwind theme and the intranet's isn't.
-- **Search.** The marketing website uses Algolia, the intranet its own matching.
+- **The library page.** The marketing website draws its listing in the browser from Algolia, the
+  intranet on the server with its own matching.
+- **Each site's links and buttons,** which come from its own styles.
 
 ## Tests
 

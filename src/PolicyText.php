@@ -15,6 +15,35 @@ use SilverStripe\View\Parsers\HTMLValue;
 class PolicyText
 {
     /**
+     * A policy's sections as one document, in order, each under a plain heading.
+     * Empty sections are left out.
+     *
+     * @param array<array{title?: string, content?: string, sort?: int}> $sections
+     */
+    public static function sections(array $sections): string
+    {
+        usort($sections, fn ($a, $b) => ($a['sort'] ?? 0) <=> ($b['sort'] ?? 0));
+
+        $html = '';
+        foreach ($sections as $section) {
+            $title = trim((string) ($section['title'] ?? ''));
+            $content = trim((string) ($section['content'] ?? ''));
+
+            if ($title === '' && $content === '') {
+                continue;
+            }
+
+            $html .= '<section class="policy__section">';
+            if ($title !== '') {
+                $html .= '<h2>' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</h2>';
+            }
+            $html .= $content . '</section>';
+        }
+
+        return $html;
+    }
+
+    /**
      * A policy's body: spaces made breakable, Word's styling taken off, clause
      * numbers hanging and off-site links marked.
      *
