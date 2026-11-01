@@ -22,7 +22,10 @@
     "extra": {
         "branch-alias": {
             "dev-main": "1.x-dev"
-        }
+        },
+        "expose": [
+            "client/javascript"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true

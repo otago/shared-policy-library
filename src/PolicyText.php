@@ -216,6 +216,43 @@ class PolicyText
     }
 
     /**
+     * What a policy is for, as plain text: its Purpose section, wherever that sits,
+     * or the first section where none is called that, without its heading, which is
+     * a label rather than a description. Otherwise the text itself.
+     *
+     * @param string $body a policy's sections, as sections() gives them
+     */
+    public static function purpose(string $body): string
+    {
+        if (trim($body) === '') {
+            return '';
+        }
+
+        $pattern = '~<section[^>]*class="[^"]*policy__section[^"]*"[^>]*>\s*'
+            . '<h2[^>]*>\s*Purpose[^<]*</h2>(.*?)</section>~is';
+        if (preg_match($pattern, $body, $m)) {
+            $purpose = self::plain($m[1]);
+            if ($purpose !== '') {
+                return $purpose;
+            }
+        }
+
+        if (preg_match('~<section[^>]*class="[^"]*policy__section[^"]*"[^>]*>(.*?)</section>~is', $body, $m)) {
+            return self::plain((string) preg_replace('~<h2[^>]*>.*?</h2>~is', '', $m[1]));
+        }
+
+        return self::plain($body);
+    }
+
+    /**
+     * Text cut to length for a line in a listing.
+     */
+    public static function summary(string $text, int $limit = 300): string
+    {
+        return mb_strlen($text) > $limit ? mb_substr($text, 0, $limit - 1) . '…' : $text;
+    }
+
+    /**
      * HTML as one line of plain text, for summaries and searching.
      */
     public static function plain(string $html): string

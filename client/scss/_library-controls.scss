@@ -1,0 +1,103 @@
+// The controls both libraries draw alike, whatever draws the rest of the page. Each
+// mixin is the look of one control, for a site to include on its own class:
+//
+//   .my-button { @include library-view-button; }
+
+@mixin library-view-button($blue: #01509f, $green: #b2de27, $tint: rgba(1, 80, 159, 0.5)) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 3.375rem;
+    height: 3.375rem;
+    padding: 0;
+    border: 1px solid $tint;
+    background: #fff;
+    color: $tint;
+    cursor: pointer;
+    transition:
+        background-color 0.35s ease-in-out,
+        border-color 0.35s ease-in-out,
+        color 0.35s ease-in-out;
+
+    &:hover,
+    &:focus-visible {
+        border-color: $blue;
+        background: $green;
+        color: $blue;
+    }
+}
+
+@mixin library-view-button-on($blue: #01509f) {
+    border-color: $blue;
+    color: $blue;
+}
+
+// "Load more"'s circle with a drawn plus. Takes a green fill from the site's own hover.
+@mixin library-plus-circle($blue: #01509f) {
+    display: block;
+    box-sizing: border-box;
+    width: 72px;
+    height: 72px;
+    border: 2px solid $blue;
+    border-radius: 50%;
+    background-color: transparent;
+    background-image: linear-gradient($blue, $blue), linear-gradient($blue, $blue);
+    background-position: center;
+    background-size:
+        34px 2px,
+        2px 34px;
+    background-repeat: no-repeat;
+    transition: background-color 0.2s ease-in-out;
+}
+
+// A filter's checkbox: 25px and square; ticked, blue with a fine white tick.
+@mixin library-checkbox($blue: #01509f) {
+    appearance: none;
+    flex: 0 0 auto;
+    width: 25px;
+    height: 25px;
+    margin: 0;
+    border: 1px solid #e5e3df;
+    border-radius: 0;
+    background: #fff no-repeat center / 14px 11px;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease-in-out,
+        border-color 0.2s ease-in-out;
+
+    &:checked {
+        border-color: $blue;
+        background-color: $blue;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 11'%3E%3Cpath d='M1 5.5l4 4L13 1' fill='none' stroke='%23fff' stroke-width='1.25'/%3E%3C/svg%3E");
+    }
+
+    &:focus-visible {
+        outline: 2px solid $blue;
+        outline-offset: 2px;
+    }
+}
+
+// Hovered, ticked or not: a blue outline and a blue tick on white.
+@mixin library-checkbox-hover($blue: #01509f) {
+    border-color: $blue;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 11'%3E%3Cpath d='M1 5.5l4 4L13 1' fill='none' stroke='%2301509f' stroke-width='1.25'/%3E%3C/svg%3E");
+}
+
+@mixin library-no-results {
+    padding: 2rem 1rem;
+    color: #555;
+    text-align: center;
+
+    h3 {
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    p {
+        font-size: 1rem;
+        color: #666;
+    }
+}

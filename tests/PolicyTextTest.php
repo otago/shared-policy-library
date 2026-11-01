@@ -2,6 +2,7 @@
 
 namespace Otago\SharedPolicyLibrary\Tests;
 
+use Otago\SharedPolicyLibrary\PolicyFeed;
 use Otago\SharedPolicyLibrary\PolicySections;
 use Otago\SharedPolicyLibrary\PolicyText;
 use SilverStripe\Dev\SapphireTest;
@@ -94,6 +95,34 @@ class PolicyTextTest extends SapphireTest
                 ['title' => 'First & foremost', 'content' => '<p>One</p>', 'sort' => 1],
             ])
         );
+    }
+
+    public function testPurposeIsThePurposeSectionOrTheFirst(): void
+    {
+        $this->assertSame('Why', PolicyText::purpose(PolicyText::sections([
+            ['title' => 'Scope', 'content' => '<p>Who</p>', 'sort' => 1],
+            ['title' => 'Purpose and aims', 'content' => '<p>Why</p>', 'sort' => 2],
+        ])));
+        $this->assertSame('Who', PolicyText::purpose(PolicyText::sections([
+            ['title' => 'Scope', 'content' => '<p>Who</p>', 'sort' => 1],
+        ])));
+        $this->assertSame('Loose text', PolicyText::purpose('<p>Loose text</p>'));
+        $this->assertSame('', PolicyText::purpose(''));
+    }
+
+    public function testSummaryCutsOnlyWhatIsTooLong(): void
+    {
+        $this->assertSame('Short', PolicyText::summary('Short', 10));
+        $this->assertSame('Too long…', PolicyText::summary('Too long by far', 9));
+    }
+
+    public function testTheQueryAsksForEveryField(): void
+    {
+        $query = PolicyFeed::query();
+        foreach (PolicyFeed::FIELDS as $field) {
+            $this->assertStringContainsString($field, $query);
+        }
+        $this->assertStringContainsString('sections { title content sort }', $query);
     }
 
     public function testSectionRules(): void
