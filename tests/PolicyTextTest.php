@@ -5,6 +5,7 @@ namespace Otago\SharedPolicyLibrary\Tests;
 use Otago\SharedPolicyLibrary\PolicyFeed;
 use Otago\SharedPolicyLibrary\PolicySections;
 use Otago\SharedPolicyLibrary\PolicyText;
+use SilverStripe\Control\Director;
 use SilverStripe\Dev\SapphireTest;
 
 class PolicyTextTest extends SapphireTest
@@ -123,6 +124,31 @@ class PolicyTextTest extends SapphireTest
             $this->assertStringContainsString($field, $query);
         }
         $this->assertStringContainsString('sections { title content sort }', $query);
+    }
+
+    public function testPortableHTMLMakesEveryAddressFull(): void
+    {
+        $html = PolicyFeed::portableHTML(
+            '<a href="/a">A</a><a href="//b.example/c">C</a>'
+            . '<img src="/assets/a.png" srcset="/assets/a.png 1x,/assets/a-big.png  1.5x, https://example.com/b.png 2x" alt="">'
+        );
+
+        $this->assertStringContainsString('href="' . Director::absoluteURL('/a') . '"', $html);
+        $this->assertStringContainsString('href="//b.example/c"', $html);
+        $this->assertStringContainsString('src="' . Director::absoluteURL('/assets/a.png') . '"', $html);
+        $this->assertStringContainsString(
+            'srcset="' . Director::absoluteURL('/assets/a.png') . ' 1x, '
+            . Director::absoluteURL('/assets/a-big.png') . ' 1.5x, https://example.com/b.png 2x"',
+            $html
+        );
+    }
+
+    public function testFlattenGivesTheShapeAPageHolds(): void
+    {
+        $flat = PolicyFeed::flatten(['content' => '<p>See</p>', 'sections' => [['title' => 'T', 'content' => '<p>B</p>']]]);
+
+        $this->assertSame('<p>See</p>', $flat['readWith']);
+        $this->assertStringContainsString('<h2>T</h2><p>B</p>', $flat['body']);
     }
 
     public function testSectionRules(): void

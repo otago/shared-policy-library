@@ -47,22 +47,26 @@ and print button:
 }
 ```
 
-The page reads these from the site's policy page:
+**The site's policy page** applies the `PolicyFacts` extension for the governance facts' columns, uses
+the `PolicyPresentation` trait, and says where its text comes from:
 
-| Field | Is |
-|---|---|
-| `Library` | The library page, for the trail and "Back to library" |
-| `Title`, `ApprovedBy`, `Responsibility` | Text |
-| `ApprovalDate`, `NextReview` | Dates |
-| `PolicyVersion`, `PolicySection`, `PastoralCareOutcome` | Text, shown when there is any |
-| `HasBody`, `BodyHTML` | Whether it has sections, and the policy text |
-| `HasReadWith`, `ReadWithHTML` | Whether it has "Read in conjunction with", and that text |
+```php
+use PolicyPresentation;
+
+protected function policyBodySource(): string { ... }      // its sections, as PolicyText::sections() gives them
+protected function policyReadWithSource(): string { ... }  // "Read in conjunction with"
+protected function policyOwnHosts(): array { ... }         // other addresses it counts as its own
+public function Library() { ... }                          // the library page, for the trail
+```
+
+It also provides `PolicySection` and `PastoralCareOutcome`, which each site stores differently.
 
 `client/javascript/policy-print.js` reveals the print button and binds it. A site loads it as a
 script (it's exposed), or imports it into its bundle.
 
-**`PolicyFeed`** is the contract between the two sites: the fields the intranet's feed sends, and the
-GraphQL query the marketing website asks with.
+**`PolicyFeed`** is the contract between the two sites: the fields the intranet's feed sends, the GraphQL
+query the marketing website asks with, `portableHTML()` for making text work on another site, and
+`flatten()` for the shape a page holds what arrives in.
 
 **The library's controls.** `client/scss/_library-controls.scss` has mixins for what both libraries
 draw alike: the view buttons, the "Load more" circle, the filter's checkboxes and the no-results
